@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include "WaveFile.h"
+#include "WaveInFile.hpp"
 
 using namespace std;
 
@@ -25,7 +24,7 @@ struct WaveHdr {
 
 const static auto minRiffSize = sizeof(WaveHdr) - (sizeof(WaveHdr::riff) + sizeof(WaveHdr::riffSize));
 
-WaveFile::WaveFile(unique_ptr<File>&& src) : src(move(src)), validFormat(false) {
+WaveInFile::WaveInFile(unique_ptr<BinReadFile>&& src) : src(move(src)), validFormat(false) {
 	if (!this->src) throw exception("Invalid File");
 
 	// read complete wave hdr
@@ -49,21 +48,21 @@ WaveFile::WaveFile(unique_ptr<File>&& src) : src(move(src)), validFormat(false) 
 	this->validFormat = true;
 }
 
-WaveFile::~WaveFile() {
+WaveInFile::~WaveInFile() {
 }
 
-uint16_t WaveFile::getChannelCount() const {
+uint16_t WaveInFile::getChannelCount() const {
 	return this->channelCount;
 }
 
-uint32_t WaveFile::getSampleRate() const {
+uint32_t WaveInFile::getSampleRate() const {
 	return this->sampleRate;
 }
 
-uint16_t WaveFile::getBitsPerSample() const {
+uint16_t WaveInFile::getBitsPerSample() const {
 	return this->bitsPerSample;
 }
 
-size_t WaveFile::read(void* dst, size_t size) {
+size_t WaveInFile::read(void* dst, size_t size) {
 	return this->src->read(dst, size);
 }

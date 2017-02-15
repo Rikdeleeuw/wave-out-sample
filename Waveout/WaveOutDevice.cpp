@@ -1,10 +1,9 @@
-#include "stdafx.h"
-#include "WaveOutDevice.h"
 #include <exception>
+#include "WaveOutDevice.hpp"
 
 using namespace std;
 
-WaveOutDevice::WaveOutDevice(unique_ptr<WaveFile>&& src) : src(move(src)), hDev(nullptr) {
+WaveOutDevice::WaveOutDevice(unique_ptr<WaveInFile>&& src) : src(move(src)), hDev(nullptr) {
 	WAVEFORMATEX devFmt;
 	devFmt.nSamplesPerSec = this->src->getSampleRate();
 	devFmt.wBitsPerSample = this->src->getBitsPerSample();

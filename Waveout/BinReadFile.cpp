@@ -1,16 +1,15 @@
-#include "stdafx.h"
-#include "File.h"
+#include "BinReadFile.hpp"
 
 using namespace std;
 
-File::File(const wstring& path) : file(nullptr) {
+BinReadFile::BinReadFile(const wstring& path) : file(nullptr) {
 	if (_wfopen_s(&this->file, path.c_str(), L"rb") != 0) throw exception("Can't open file");
 }
 
-File::~File() {
+BinReadFile::~BinReadFile() {
 	if (this->file)fclose(this->file);
 }
 
-size_t File::read(void* dst, size_t size) {
+size_t BinReadFile::read(void* dst, size_t size) {
 	return fread(dst, 1, size, this->file);
 }

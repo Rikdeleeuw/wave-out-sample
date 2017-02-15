@@ -1,16 +1,16 @@
 #pragma once
 
-#define WINDOWS_LEAN_AND_MEAN
-#include <Windows.h>
 #include <array>
 #include <condition_variable>
 #include <mutex>
-#include "WaveFile.h"
+#include <Windows.h>
+#include "WaveInFile.hpp"
+
 
 class WaveOutDevice
 {
 private:
-	std::unique_ptr<WaveFile> src;
+	std::unique_ptr<WaveInFile> src;
 
 	HWAVEOUT hDev;
 
@@ -21,7 +21,7 @@ private:
 	bool done;
 
 public:
-	WaveOutDevice(std::unique_ptr<WaveFile>&& src);
+	WaveOutDevice(std::unique_ptr<WaveInFile>&& src);
 	WaveOutDevice(WaveOutDevice const&) = delete;
 	~WaveOutDevice();
 

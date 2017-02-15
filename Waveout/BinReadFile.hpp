@@ -3,17 +3,17 @@
 #include <string>
 #include <memory>
 
-class File
+class BinReadFile
 {
 private:
 	FILE* file;
 
 public:
-	File(const std::wstring& path);
-	File(File const&) = delete;
-	virtual ~File();
+	BinReadFile(const std::wstring& path);
+	BinReadFile(BinReadFile const&) = delete;
+	virtual ~BinReadFile();
 
-	void operator =(File const &) = delete;
+	void operator =(BinReadFile const &) = delete;
 
 	template <typename T>
 	bool read(T& dst);
@@ -22,7 +22,7 @@ public:
 };
 
 template <typename T>
-bool File::read(T& dst) {
+bool BinReadFile::read(T& dst) {
 	return fread_s(&dst, sizeof(T), sizeof(T), 1, this->file) == 1;
 }
 

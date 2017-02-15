@@ -1,7 +1,8 @@
 #pragma once
-#include "File.h"
 
-class WaveFile
+#include "BinReadFile.hpp"
+
+class WaveInFile
 {
 private:
 	bool validFormat;
@@ -9,11 +10,11 @@ private:
 	uint32_t sampleRate;
 	uint16_t bitsPerSample;
 
-	std::unique_ptr<File> src;
+	std::unique_ptr<BinReadFile> src;
 
 public:
-	WaveFile(std::unique_ptr<File>&& src);
-	~WaveFile();
+	WaveInFile(std::unique_ptr<BinReadFile>&& src);
+	~WaveInFile();
 
 	uint16_t getChannelCount() const;
 	uint32_t getSampleRate() const;

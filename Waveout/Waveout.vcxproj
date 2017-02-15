@@ -146,24 +146,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ClInclude Include="BinReadFile.hpp" />
+    <ClInclude Include="WaveInFile.hpp" />
+    <ClInclude Include="WaveOutDevice.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="File.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="WaveFile.h" />
-    <ClInclude Include="WaveOutDevice.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="File.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="WaveFile.cpp" />
+    <ClCompile Include="BinReadFile.cpp" />
+    <ClCompile Include="WaveInFile.cpp" />
     <ClCompile Include="Waveout.cpp" />
     <ClCompile Include="WaveOutDevice.cpp" />
   </ItemGroup>
