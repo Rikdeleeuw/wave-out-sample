@@ -2,3 +2,6 @@
 /Waveout/Debug
 /Waveout/ipch
 /Waveout/x64
+/Waveout/*.opendb
+/Waveout/*.db
+/Waveout/*.user

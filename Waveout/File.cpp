@@ -3,20 +3,14 @@
 
 using namespace std;
 
-File::File(const wstring& path) : file(nullptr)
-{
-	auto error = _wfopen_s(&this->file, path.c_str(), L"rb");
-	if (error != 0) {
-		wprintf(L"Could not find %s\n", path.c_str());
-		this->file = nullptr;
-	}
+File::File(const wstring& path) : file(nullptr) {
+	if (_wfopen_s(&this->file, path.c_str(), L"rb") != 0) throw exception("Can't open file");
 }
 
-File::~File()
-{
+File::~File() {
 	if (this->file)fclose(this->file);
 }
 
-bool File::valid() const {
-	return this->file != nullptr;
+size_t File::read(void* dst, size_t size) {
+	return fread(dst, 1, size, this->file);
 }

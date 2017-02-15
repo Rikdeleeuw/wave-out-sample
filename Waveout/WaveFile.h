@@ -1,7 +1,7 @@
 #pragma once
 #include "File.h"
 
-class WaveFile : public File
+class WaveFile
 {
 private:
 	bool validFormat;
@@ -9,14 +9,16 @@ private:
 	uint32_t sampleRate;
 	uint16_t bitsPerSample;
 
-public:
-	WaveFile(const std::wstring& path);
-	~WaveFile();
+	std::unique_ptr<File> src;
 
-	bool valid() const;
+public:
+	WaveFile(std::unique_ptr<File>&& src);
+	~WaveFile();
 
 	uint16_t getChannelCount() const;
 	uint32_t getSampleRate() const;
 	uint16_t getBitsPerSample() const;
+
+	size_t read(void* dst, size_t size);
 };
 
