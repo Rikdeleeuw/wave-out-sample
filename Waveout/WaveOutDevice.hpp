@@ -62,7 +62,7 @@ private:
 	 * \param[in]	param1	The first parameter of the message.
 	 * \param[in]	param2	The second parameter of the message.
 	 */
-	static void staticWaveProc(HWAVEOUT, UINT msg, DWORD_PTR instance, DWORD_PTR param1, DWORD_PTR param2);
+	static void CALLBACK staticWaveProc(HWAVEOUT, UINT msg, DWORD_PTR instance, DWORD_PTR param1, DWORD_PTR param2);
 
 	/**
 	 * \brief Processes windows messages received through the callback.

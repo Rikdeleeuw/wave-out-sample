@@ -3,7 +3,7 @@
 
 using namespace std;
 
-WaveOutDevice::WaveOutDevice(unique_ptr<WaveInFile>&& src) : src(move(src)), dev(nullptr) {
+WaveOutDevice::WaveOutDevice(unique_ptr<WaveInFile>&& src) : src(move(src)), dev(nullptr), tickCount(0) {
 	// prepare wave format for audio device from the parameters found in the file
 	WAVEFORMATEX devFmt;
 	devFmt.nSamplesPerSec = this->src->getSampleRate();
@@ -17,7 +17,7 @@ WaveOutDevice::WaveOutDevice(unique_ptr<WaveInFile>&& src) : src(move(src)), dev
 	devFmt.nAvgBytesPerSec = devFmt.nBlockAlign * devFmt.nSamplesPerSec;
 
 	// open hardware device
-	if (waveOutOpen(&dev, WAVE_MAPPER, &devFmt, reinterpret_cast<DWORD_PTR>(staticWaveProc), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION | WAVE_ALLOWSYNC) != MMSYSERR_NOERROR) throw exception("Can't open WAVE_MAPPER");
+	if (waveOutOpen(&dev, WAVE_MAPPER, &devFmt, reinterpret_cast<DWORD_PTR>(staticWaveProc), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION | WAVE_ALLOWSYNC) != MMSYSERR_NOERROR) throw exception("Can't open default wave device");
 }
 
 WaveOutDevice::~WaveOutDevice() {
@@ -61,7 +61,7 @@ void WaveOutDevice::start() {
 	// prepare buffers and issue initial buffers to the audio device
 	for (auto& buffer : buffers) {
 		ZeroMemory(&buffer, sizeof(buffer));
-		buffer.dwBufferLength = (this->src->getBitsPerSample() * this->src->getChannelCount() * this->src->getSampleRate()) / 80;
+		buffer.dwBufferLength = (this->src->getBitsPerSample() * this->src->getChannelCount() * this->src->getSampleRate()) / 8;
 		buffer.lpData = new CHAR[buffer.dwBufferLength];
 		size_t wsize = this->src->read(buffer.lpData, buffer.dwBufferLength);
 		if (wsize != buffer.dwBufferLength) ZeroMemory(buffer.lpData + wsize, buffer.dwBufferLength - wsize);
@@ -71,4 +71,8 @@ void WaveOutDevice::start() {
 	// wait for audio to stop
 	unique_lock<mutex> l(this->m);
 	this->cv.wait(l, [this]() {return this->done; });
+	for (auto& buffer : buffers) {
+		waveOutUnprepareHeader(this->dev, &buffer, sizeof(WAVEHDR));
+		delete [] buffer.lpData;
+	}
 }

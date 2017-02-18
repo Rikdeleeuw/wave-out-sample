@@ -6,7 +6,7 @@ using namespace std;
 /**
  * \brief Common WAVE audio file header structure;
  */
-struct WaveHdr {
+struct waveHdr_t {
 	char riff[4];						//< \brief Magic "RIFF".
 	uint32_t riffSize;				//< \brief Size of the file after this field in bytes.
 	char wave[4];					//< \brief Magic "WAVE".
@@ -26,16 +26,15 @@ struct WaveHdr {
 	uint32_t dataSize;			//< \brief size of the rest of the file (the raw audio data).
 };
 
-const static auto minRiffSize = sizeof(WaveHdr) - (sizeof(WaveHdr::riff) + sizeof(WaveHdr::riffSize));
+const static auto minRiffSize = sizeof(waveHdr_t) - (sizeof(waveHdr_t::riff) + sizeof(waveHdr_t::riffSize));
 
 WaveInFile::WaveInFile(unique_ptr<BinReadFile>&& src) : src(move(src)) {
 	if (!this->src) throw exception("Invalid File");
 
-	// read complete wave hdr
-	WaveHdr hdr;
-	this->src->read(hdr);
-	// check for header corruption
-	if ((memcmp("RIFF", hdr.riff, 4) != 0)
+	// read and check for header corruption
+	waveHdr_t hdr;
+	if ((!this->src->read(hdr))
+		|| (memcmp("RIFF", hdr.riff, 4) != 0)
 		|| (memcmp("WAVE", hdr.wave, 4) != 0)
 		|| (memcmp("fmt ", hdr.fmt_, 4) != 0)
 		|| (memcmp("data", hdr.data, 4) != 0)
@@ -45,7 +44,7 @@ WaveInFile::WaveInFile(unique_ptr<BinReadFile>&& src) : src(move(src)) {
 		|| (hdr.sampleRate == 0)
 		|| (hdr.fmtSize != 16)
 		|| (hdr.riffSize <= minRiffSize)
-		|| (hdr.dataSize == 0)) throw exception("Malformed wave header");
+		|| (hdr.dataSize == 0)) throw exception("Unsupported wave format");
 
 	// stroe important information
 	this->channelCount = hdr.channelCount;

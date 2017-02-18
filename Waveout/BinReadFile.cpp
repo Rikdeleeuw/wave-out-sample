@@ -13,3 +13,11 @@ BinReadFile::~BinReadFile() {
 size_t BinReadFile::read(void* dst, size_t size) {
 	return fread(dst, 1, size, this->file);
 }
+
+uint64_t BinReadFile::getPos() {
+	return _ftelli64(this->file);
+}
+
+bool BinReadFile::setPos(uint64_t pos) {
+	return _fseeki64(this->file, pos, SEEK_SET) == 0;
+}

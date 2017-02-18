@@ -56,6 +56,10 @@ public:
 	 * \post The file pointer has moved.
 	 */
 	size_t read(void* dst, size_t size);
+
+	uint64_t getPos();
+
+	bool setPos(uint64_t pos);
 };
 
 template <typename T>

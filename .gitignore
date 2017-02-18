@@ -5,3 +5,5 @@
 /Waveout/*.opendb
 /Waveout/*.db
 /Waveout/*.user
+/Midiout/Debug
+/Midiout/*.user
