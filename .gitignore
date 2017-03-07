@@ -4,6 +4,11 @@
 /Waveout/x64
 /Waveout/*.opendb
 /Waveout/*.db
-/Waveout/*.user
+*.user
 /Midiout/Debug
-/Midiout/*.user
+/Storage/x64
+/Storage/Debug
+/Storage/Release
+/Midiout/Release
+/Midiout/x64
+/Waveout/Release
