@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BinReadFile.hpp"
+#include "Storage/BinReadFile.hpp"
 
 /**
  * \brief Reads a *.wav file for use as audio source.

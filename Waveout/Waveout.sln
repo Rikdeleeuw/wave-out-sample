@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Waveout", "Waveout.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Midiout", "..\Midiout\Midiout.vcxproj", "{FB289D91-7B00-4B3D-8FAA-120746F7A118}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Storage", "..\Storage\Storage.vcxproj", "{BDF5D669-C665-4E02-A9D9-2F53091A175B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{FB289D91-7B00-4B3D-8FAA-120746F7A118}.Release|x64.Build.0 = Release|x64
 		{FB289D91-7B00-4B3D-8FAA-120746F7A118}.Release|x86.ActiveCfg = Release|Win32
 		{FB289D91-7B00-4B3D-8FAA-120746F7A118}.Release|x86.Build.0 = Release|Win32
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Debug|x64.ActiveCfg = Debug|x64
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Debug|x64.Build.0 = Debug|x64
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Debug|x86.ActiveCfg = Debug|Win32
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Debug|x86.Build.0 = Debug|Win32
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Release|x64.ActiveCfg = Release|x64
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Release|x64.Build.0 = Release|x64
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Release|x86.ActiveCfg = Release|Win32
+		{BDF5D669-C665-4E02-A9D9-2F53091A175B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

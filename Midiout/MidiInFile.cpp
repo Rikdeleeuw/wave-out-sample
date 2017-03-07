@@ -1,3 +1,5 @@
+#include <iostream>
+#include <Windows.h>
 #include "MidiInFile.hpp"
 
 using namespace std;
@@ -18,7 +20,7 @@ struct track_t {
 	uint32_t size;
 };
 
-MidiInFile::MidiInFile(unique_ptr<BinReadFile>&& src) : src(move(src)) {
+MidiInFile::MidiInFile(unique_ptr<BinReadFile>&& src) : src(move(src)), curTickCount(0) {
 	if (!this->src) throw exception("Invalid File");
 
 	header_t hdr;
@@ -40,39 +42,68 @@ MidiInFile::MidiInFile(unique_ptr<BinReadFile>&& src) : src(move(src)) {
 			|| (memcmp(curTrack.mtrk, "MTrk", 4) != 0)
 			|| (curTrack.size == 0)) throw exception("Unsupported midi format");
 		curTrack.size = _byteswap_ulong(curTrack.size);
-		this->trackPtrs.push_back({this->src->getPos(), curTrack.size});
-		this->src->setPos(this->trackPtrs[trackIndex].fileOffset + this->trackPtrs[trackIndex].size);
+		this->trackPtrs.push_back(MidiTrack(*this, this->src->getPos(), curTrack.size));
+		this->src->skip(curTrack.size);
 	}
 }
 
 MidiInFile::~MidiInFile() {
 }
 
-uint32_t MidiInFile::readVariableLength(uint32_t &dst) {
-	uint32_t readBytes = 0;
-	for (int i = 0; i < 4; ++i) {
-		uint8_t nextVal = 0;
-		if (!this->src->read(nextVal)) break;
-		++readBytes;
-		dst = (dst << 7) + (nextVal & 0x7F);
-		if ((nextVal & 0x80) == 0) break;
-	}
-	return readBytes;
-}
-
 int16_t MidiInFile::getTickCount() const {
 	return this->tickCount;
 }
 
-size_t MidiInFile::read(void* dst, size_t size, unsigned int trackIndex) {
-	auto& track = this->trackPtrs[trackIndex];
-	this->src->setPos(track.fileOffset);
-	uint32_t readBytes = 0;
-	
-	uint32_t delay;
-	readBytes += readVariableLength(delay);
+size_t MidiInFile::read(midiEvent_t* dst, size_t count, unsigned int trackIndex) {
+	if (trackIndex >= this->trackPtrs.size()) return 0;
+	uint32_t res = 0;
+	for (uint32_t i = 0; i < count; ++i) {
+		dst[i] = this->trackPtrs[trackIndex].getNextEvent(this->curTickCount, this->src.get());
+		if ((dst[i].event == 0) && this->trackPtrs[trackIndex].hasEnded()) {
+			break;
+		}
+		else {
+			++res;
+			this->curTickCount += dst[i].deltaTime;
+		}
+	}
+	return res;
+}
 
-	track.fileOffset += readBytes;
-	track.size -= readBytes;
-	return 0;
+size_t MidiInFile::read(midiEvent_t* dst, size_t count) {
+	uint32_t res = 0;
+	for (uint32_t i = 0; i < count; ++i) {
+		midiEvent_t first = { 0xFFFFFFFF, 0, 0 };
+		uint32_t firstTrackIndex = 0;
+		for (unsigned int trackIndex = 0; trackIndex < this->trackPtrs.size(); ++trackIndex) {
+			midiEvent_t temp = this->trackPtrs[trackIndex].peekNextEvent(this->curTickCount, this->src.get());
+			if ((temp.event == 0) && this->trackPtrs[trackIndex].hasEnded()) {
+				continue;
+			}
+			else {
+				if (first.deltaTime > temp.deltaTime) {
+					first = temp;
+					firstTrackIndex = trackIndex;
+				}
+			}
+		}
+		if (first.event == 0) {
+			break;
+		}
+		else {
+			this->trackPtrs[firstTrackIndex].getNextEvent(this->curTickCount, this->src.get());
+			dst[i] = first;
+			++res;
+			this->curTickCount += dst[i].deltaTime;
+		}
+	}
+	return res;
+}
+
+bool MidiInFile::skip(uint64_t size) {
+	return this->src->skip(size);
+}
+
+bool MidiInFile::setPos(uint64_t pos) {
+	return this->src->setPos(pos);
 }

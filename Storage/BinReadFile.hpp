@@ -57,9 +57,32 @@ public:
 	 */
 	size_t read(void* dst, size_t size);
 
-	uint64_t getPos();
+	/**
+	 * \brief Returns the current offset in the file.
+	 *
+	 * \return	File pointer location.
+	 */
+	uint64_t getPos() const;
 
+	/**
+	 * \brief Set the current file pointer location.
+	 *
+	 * \param[in]	pos	The new file pointer position.
+	 * \returns				If the position could be set.
+	 *
+	 * \post	File pointer has moved.
+	 */
 	bool setPos(uint64_t pos);
+
+	/**
+	 * \brief Skips over a number of bytes in the file.
+	 *
+	 * \param[in]	size	The number of bytes to skip.
+	 * \return					If the positon could be set.
+	 *
+	 * \post file pointer has moved.
+	 */
+	bool skip(uint64_t size);
 };
 
 template <typename T>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <mutex>
 #include <Windows.h>
 #include "MidiInFile.hpp"
 
@@ -10,6 +11,10 @@ private:
 
 	HMIDISTRM dev;
 	std::array<MIDIHDR, 2> buffers;
+
+	std::mutex m;						
+	std::condition_variable cv;	
+	bool done;
 
 public:
 	MidiOutDevice(std::unique_ptr<MidiInFile>&& src);

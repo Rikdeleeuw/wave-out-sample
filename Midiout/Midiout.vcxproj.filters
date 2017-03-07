@@ -21,24 +21,24 @@
     <ClCompile Include="Midiout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Waveout\BinReadFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MidiInFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MidiOutDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MidiTrack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Waveout\BinReadFile.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MidiInFile.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MidiOutDevice.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MidiTrack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

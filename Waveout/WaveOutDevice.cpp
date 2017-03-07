@@ -3,7 +3,7 @@
 
 using namespace std;
 
-WaveOutDevice::WaveOutDevice(unique_ptr<WaveInFile>&& src) : src(move(src)), dev(nullptr), tickCount(0) {
+WaveOutDevice::WaveOutDevice(unique_ptr<WaveInFile>&& src) : src(move(src)), dev(nullptr), done(false) {
 	// prepare wave format for audio device from the parameters found in the file
 	WAVEFORMATEX devFmt;
 	devFmt.nSamplesPerSec = this->src->getSampleRate();
@@ -29,31 +29,27 @@ void WaveOutDevice::staticWaveProc(HWAVEOUT, UINT msg, DWORD_PTR instance, DWORD
 }
 
 void WaveOutDevice::waveProc(UINT msg, DWORD_PTR param1, DWORD_PTR param2) {
-	switch (msg) {
-	case WOM_OPEN:
-		break;
-	case WOM_DONE:
+	if (msg == WOM_DONE) 
 	{
+		if (done) {
+			cv.notify_all();
+			return;
+		}
 		// reschedule buffer with new audio data
 		LPWAVEHDR buffer = reinterpret_cast<LPWAVEHDR>(param1);
 		waveOutUnprepareHeader(this->dev, buffer, sizeof(WAVEHDR));
-		size_t wsize = this->src->read(buffer->lpData, buffer->dwBufferLength);
+		DWORD wsize = static_cast<DWORD>(this->src->read(buffer->lpData, buffer->dwBufferLength));
 		// end of audio signal reached
 		if (wsize == 0) {
 			// signal the main thread so it can continue
 			unique_lock<mutex> l(this->m);
 			done = true;
-			cv.notify_all();
-			break;
+			return;
 		}
-		// do we need to pad the buffer
-		else if (wsize != buffer->dwBufferLength) ZeroMemory(buffer->lpData + wsize, buffer->dwBufferLength - wsize);
+		// do we need to readjust the size
+		else if (wsize < buffer->dwBufferLength) buffer->dwBufferLength = wsize;
 		waveOutPrepareHeader(dev, buffer, sizeof(WAVEHDR));
 		waveOutWrite(dev, buffer, sizeof(WAVEHDR));
-	}
-		break;
-	case WOM_CLOSE:
-		break;
 	}
 }
 
