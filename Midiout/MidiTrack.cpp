@@ -1,6 +1,6 @@
 #include "MidiTrack.hpp"
 
-MidiTrack::MidiTrack(MidiInFile& src, uint64_t fileOffset, uint32_t size) : src(src), trackBegin(fileOffset), trackEnd(fileOffset + size), lastCmd(0), ended(size == 0), trackIter(fileOffset), endIndex(0), index(0), curTickCount(0)
+MidiTrack::MidiTrack(MidiInFile& src, uint64_t fileOffset, uint32_t size) : src(src), lastCmd(0), ended(size == 0), trackPos(fileOffset), endIndex(0), index(0), curTickCount(0)
 {
 	this->buffer.fill({ 0 });
 }
@@ -10,7 +10,7 @@ MidiTrack::~MidiTrack()
 }
 
 bool MidiTrack::hasEnded() const {
-	return this->ended && (this->trackIter < this->trackEnd);
+	return this->ended && (this->trackPos < this->trackEnd);
 }
 
 midiEvent_t MidiTrack::getNextEvent(uint32_t songTickCount, const BinReadFile* src) {
@@ -36,7 +36,7 @@ midiEvent_t MidiTrack::peekNextEvent(uint32_t songTickCount, const BinReadFile* 
 }
 
 void MidiTrack::readBuffer(const BinReadFile* src) {
-	this->src.setPos(this->trackIter);
+	this->src.setPos(this->trackPos);
 	uint32_t readBytes = 0;
 
 	for (this->index = 0; (this->index < this->buffer.size()) && (!this->ended);) {
@@ -101,31 +101,31 @@ void MidiTrack::readEvent() {
 		}
 	} 
 	// valid end of track?
-	if (this->trackIter >= this->trackEnd) this->ended = true;
+	if (this->trackPos >= this->trackEnd) this->ended = true;
 }
 
 uint32_t MidiTrack::readVariableLength() {
 	uint32_t res = 0;
-	for (int i = 0; (i < 4) && (this->trackIter < this->trackEnd); ++i) {
+	for (int i = 0; (i < 4) && (this->trackPos < this->trackEnd); ++i) {
 		uint8_t nextVal = 0;
 		if (!src.read(nextVal)) {
 			this->ended = true;
 			break;
 		}
-		++trackIter;
+		++this->trackPos;
 		res = (res << 7) + (nextVal & 0x7F);
 		if ((nextVal & 0x80) == 0) break;
 	}
-	if (this->trackIter == this->trackEnd) this->ended = true;
+	if (this->trackPos == this->trackEnd) this->ended = true;
 	return res;
 }
 
 bool MidiTrack::skip(uint64_t size) {
 	bool res = false;
-	if ((this->trackIter + size) <= this->trackEnd) {
+	if ((this->trackPos + size) <= this->trackEnd) {
 		res = this->src.skip(size);
-		this->trackIter += size;
-		if (!res || (this->trackIter == this->trackEnd)) this->ended = true;
+		this->trackPos += size;
+		if (!res || (this->trackPos == this->trackEnd)) this->ended = true;
 	} else {
 		this->ended = true;
 	}

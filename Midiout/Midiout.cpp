@@ -17,7 +17,7 @@ void CALLBACK midiOutProc(HMIDIOUT, UINT msg, DWORD_PTR instance, DWORD_PTR para
 */
 int wmain(int argc, wchar_t** argv)
 {
-	if (argc < 2) {
+	if (argc != 2) {
 		wprintf(L"missing commandline parametewr: *.mid file to play\n");
 		return -1;
 	}
